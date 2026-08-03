@@ -1,6 +1,7 @@
 import time
 from datetime import datetime
-
+from flask import Flask
+import threading
 # ==========================================
 # PROMPT MAESTRO (El Cerebro y Personalidad)
 # ==========================================
@@ -70,10 +71,15 @@ def tarea_7pm():
     enviar_mensaje_whatsapp(mensaje)
 
 # ==========================================
-# ARRANQUE DEL ASISTENTE
+# # ==========================================
+# ARRANQUE DEL ASISTENTE Y SERVIDOR WEB
 # ==========================================
 if __name__ == "__main__":
     print("=== ASISTENTE SÍ AL MÉRITO INICIALIZADO CORRECTAMENTE ===")
     print("Cerebro y mensajes cargados con éxito.")
-    # Prueba local de los mensajes al encender
+    
+    # Arrancamos el servidor web en segundo plano para Render
+    keep_alive()
+    
+    # Aquí puedes dejar tus pruebas o dejarlo encendido esperando tareas
     # tarea_6am()
