@@ -2,13 +2,16 @@ import time
 from datetime import datetime
 from flask import Flask
 import threading
+from apscheduler.schedulers.background import BackgroundScheduler
 
-# --- Servidor web para mantener activo a Render 24/7 ---
+# ==========================================
+# 1. SERVIDOR WEB PARA MANTENER ACTIVO A RENDER
+# ==========================================
 app = Flask('')
 
 @app.route('/')
 def home():
-    return "¡SÍ AL MÉRITO está activo y operando en la nube!"
+    return "¡SÍ AL MÉRITO está activo, operando en la nube y con el reloj automático listo!"
 
 def run():
     app.run(host='0.0.0.0', port=8080)
@@ -43,13 +46,13 @@ TONO Y ESTILO:
 """
 
 # ==========================================
-# MENSAJES AUTOMÁTICOS DIARIOS
+# 2. MENSAJES AUTOMÁTICOS DIARIOS
 # ==========================================
 def enviar_mensaje_whatsapp(texto_mensaje):
     """
-    Función encargada de despachar el mensaje al grupo de WhatsApp.
+    Función encargada de despachar el mensaje.
     """
-    print(f"[WHATSAPP SÍ AL MÉRITO] Enviando mensaje...")
+    print(f"[WHATSAPP SÍ AL MÉRITO] Enviando mensaje programado...")
     print(f"Contenido:\n{texto_mensaje}")
     print("-" * 50)
 
@@ -86,14 +89,35 @@ def tarea_7pm():
     enviar_mensaje_whatsapp(mensaje)
 
 # ==========================================
-# ARRANQUE DEL ASISTENTE Y SERVIDOR WEB
+# 3. CONFIGURACIÓN DEL RELOJ AUTOMÁTICO
+# ==========================================
+def iniciar_reloj():
+    scheduler = BackgroundScheduler()
+    
+    # Programamos las tareas a sus horas exactas
+    scheduler.add_job(tarea_6am, 'cron', hour=6, minute=0)
+    scheduler.add_job(tarea_12m, 'cron', hour=12, minute=0)
+    scheduler.add_job(tarea_7pm, 'cron', hour=19, minute=0)
+    
+    scheduler.start()
+    print("=== RELOJ AUTOMÁTICO DE SÍ AL MÉRITO ACTIVADO (6AM, 12M, 7PM) ===")
+
+# ==========================================
+# ARRANQUE PRINCIPAL
 # ==========================================
 if __name__ == "__main__":
     print("=== ASISTENTE SÍ AL MÉRITO INICIALIZADO CORRECTAMENTE ===")
     print("Cerebro y mensajes cargados con éxito.")
     
-    # Arrancamos el servidor web en segundo plano para Render
+    # 1. Arrancamos el servidor web para que Render no duerma el bot
     keep_alive()
     
-    # Aquí puedes dejar tus pruebas o dejarlo encendido esperando tareas
-    # tarea_6am()
+    # 2. Encendemos el reloj que disparará los mensajes en los horarios exactos
+    iniciar_reloj()
+    
+    # Bucle infinito para mantener el programa vivo en la nube
+    try:
+        while True:
+            time.sleep(1)
+    except (KeyboardInterrupt, SystemExit):
+        pass
