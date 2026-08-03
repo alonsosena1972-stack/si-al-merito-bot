@@ -2,6 +2,21 @@ import time
 from datetime import datetime
 from flask import Flask
 import threading
+
+# --- Servidor web para mantener activo a Render 24/7 ---
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "¡SÍ AL MÉRITO está activo y operando en la nube!"
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = threading.Thread(target=run)
+    t.start()
+
 # ==========================================
 # PROMPT MAESTRO (El Cerebro y Personalidad)
 # ==========================================
@@ -71,7 +86,6 @@ def tarea_7pm():
     enviar_mensaje_whatsapp(mensaje)
 
 # ==========================================
-# # ==========================================
 # ARRANQUE DEL ASISTENTE Y SERVIDOR WEB
 # ==========================================
 if __name__ == "__main__":
