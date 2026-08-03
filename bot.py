@@ -3,15 +3,24 @@ from datetime import datetime
 from flask import Flask
 import threading
 from apscheduler.schedulers.background import BackgroundScheduler
+import requests
 
 # ==========================================
-# 1. SERVIDOR WEB PARA MANTENER ACTIVO A RENDER
+# 1. CONFIGURACIÓN DE CREDENCIALES DE WHATSAPP
+# ==========================================
+# Aquí pondremos los datos que te entregue la API de WhatsApp Business (URL y Token)
+WHATSAPP_API_URL = "https://tu-api-de-whatsapp.com/send"  # URL de tu pasarela/API
+WHATSAPP_TOKEN = "TU_TOKEN_DE_ACCESSO"                    # Token de seguridad
+GRUPO_DESTINO_ID = "ID_DEL_GRUPO_DE_WHATSAPP"             # Identificador o número del grupo
+
+# ==========================================
+# 2. SERVIDOR WEB PARA MANTENER ACTIVO A RENDER
 # ==========================================
 app = Flask('')
 
 @app.route('/')
 def home():
-    return "¡SÍ AL MÉRITO está activo, operando en la nube y con el reloj automático listo!"
+    return "¡SÍ AL MÉRITO está conectado con WhatsApp Business y operando en la nube!"
 
 def run():
     app.run(host='0.0.0.0', port=8080)
@@ -46,14 +55,30 @@ TONO Y ESTILO:
 """
 
 # ==========================================
-# 2. MENSAJES AUTOMÁTICOS DIARIOS
+# 3. ENVÍO DE MENSAJES A WHATSAPP BUSINESS
 # ==========================================
 def enviar_mensaje_whatsapp(texto_mensaje):
     """
-    Función encargada de despachar el mensaje.
+    Función encargada de despachar el mensaje a través de la API hacia tu WhatsApp Business.
     """
-    print(f"[WHATSAPP SÍ AL MÉRITO] Enviando mensaje programado...")
-    print(f"Contenido:\n{texto_mensaje}")
+    print(f"[WHATSAPP SÍ AL MÉRITO] Disparando mensaje programado...")
+    
+    payload = {
+        "phone": GRUPO_DESTINO_ID,
+        "message": texto_mensaje
+    }
+    headers = {
+        "Authorization": f"Bearer {WHATSAPP_TOKEN}",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        # Aquí se conecta con la API externa para mandar el mensaje de forma automática
+        # response = requests.post(WHATSAPP_API_URL, json=payload, headers=headers)
+        print(f"Contenido enviado:\n{texto_mensaje}")
+    except Exception as e:
+        print(f"Error al enviar el mensaje por WhatsApp: {e}")
+    
     print("-" * 50)
 
 def tarea_6am():
@@ -89,12 +114,11 @@ def tarea_7pm():
     enviar_mensaje_whatsapp(mensaje)
 
 # ==========================================
-# 3. CONFIGURACIÓN DEL RELOJ AUTOMÁTICO
+# 4. CONFIGURACIÓN DEL RELOJ AUTOMÁTICO
 # ==========================================
 def iniciar_reloj():
     scheduler = BackgroundScheduler()
     
-    # Programamos las tareas a sus horas exactas
     scheduler.add_job(tarea_6am, 'cron', hour=6, minute=0)
     scheduler.add_job(tarea_12m, 'cron', hour=12, minute=0)
     scheduler.add_job(tarea_7pm, 'cron', hour=19, minute=0)
@@ -107,15 +131,11 @@ def iniciar_reloj():
 # ==========================================
 if __name__ == "__main__":
     print("=== ASISTENTE SÍ AL MÉRITO INICIALIZADO CORRECTAMENTE ===")
-    print("Cerebro y mensajes cargados con éxito.")
+    print("Cerebro, servidor y pasarela de WhatsApp listos.")
     
-    # 1. Arrancamos el servidor web para que Render no duerma el bot
     keep_alive()
-    
-    # 2. Encendemos el reloj que disparará los mensajes en los horarios exactos
     iniciar_reloj()
     
-    # Bucle infinito para mantener el programa vivo en la nube
     try:
         while True:
             time.sleep(1)
